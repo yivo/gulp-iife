@@ -1,0 +1,25 @@
+{
+  "name": "gulp-iife",
+  "version": "1.0.0",
+  "description": "IIFE wrapper for gulp",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yivo/gulp-iife.git"
+  },
+  "author": "Yaroslav Konoplov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yivo/gulp-iife/issues"
+  },
+  "homepage": "https://github.com/yivo/gulp-iife",
+  "dependencies": {
+    "coffee-script": "^1.9.1",
+    "gulp": "^3.8.11",
+    "lodash": "^3.6.0",
+    "through2": "^0.6.3"
+  }
+}
