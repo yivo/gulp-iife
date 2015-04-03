@@ -11,7 +11,7 @@
     "url": "git://github.com/yivo/gulp-iife.git"
   },
   "author": "Yaroslav Konoplov",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/yivo/gulp-iife/issues"
   },

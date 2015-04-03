@@ -7,7 +7,9 @@ _       = require 'lodash'
 through = require 'through2'
 
 module.exports = (options) ->
-  templates = _.reduce ['coffee'], (memo, type) ->
+  types = ['coffee']
+
+  templates = _.reduce types, (memo, type) ->
     memo[type] = _.template fs.readFileSync("#{__dirname}/templates/bundle-#{type}.ejs", encoding: 'utf8')
     memo
   , {}
@@ -15,21 +17,28 @@ module.exports = (options) ->
   wrapInSingleQuotes = (str) ->
     "'" + str.replace("'", "\\'") + "'"
 
+  typeToIndent = coffee: '  ', js: '    '
+
   through.obj (file, enc, next) ->
     if file.isNull()
       @push(file)
 
-    if file.isBuffer()
+    else if file.isBuffer()
 
       filePath = file.path
       if _.isFunction(options.pathModifier)
         filePath = options.pathModifier(file.path)
 
-      contents = file.contents.toString('utf8').replace(/\r?\n/g, '\n  ')
+      options = _.extend {}, {
+        dependencies: null
+        namespace: null,
+        indent: typeToIndent[options.type]
+        wrapInSingleQuotes
+      }, options
 
-      file.contents = new Buffer templates[options.type](_.extend({
-        dependencies: null, namespace: null, wrapInSingleQuotes
-      }, options, {contents}))
+      options.contents = file.contents.toString('utf8').replace(/\r?\n/g, "\n#{options.indent}")
+
+      file.contents = new Buffer templates[options.type](options)
 
       @push(file)
 
