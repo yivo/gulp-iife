@@ -3,7 +3,7 @@ if (dependencies) { %>
   if typeof define is 'function' and define.amd
     define([<%= _.keys(dependencies).map(wrapInSingleQuotes).join(',')
     %>], factory)
-  else if typeof exports is 'object' && typeof module is 'object'
+  else if typeof module is 'object' && typeof module.exports is 'object'
     module.exports = factory(<%= _.keys(dependencies).map(function(key) {
       return "require(" + wrapInSingleQuotes(key) + ")";
     }).join(',')%>)
@@ -21,7 +21,7 @@ if (dependencies) { %>
 <% } else { %>
   if typeof define is 'function' and define.amd
     define(factory)
-  else if typeof exports is 'object' && typeof module is 'object'
+  else if typeof module is 'object' && typeof module.exports is 'object'
     module.exports = factory()
   else<%
   if (namespace) { %>
