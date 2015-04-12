@@ -17,7 +17,7 @@ if (dependencies) { %>
       return 'root.' + val;
     }).join(',')%>)<%
     } %>
-)(@, (<%= _.values(dependencies).join(',') %>) ->
+)(@, (<%= _.filter(_.values(dependencies)).join(',') %>) ->
 <% } else { %>
   if typeof define is 'function' and define.amd
     define(factory)
