@@ -13,7 +13,7 @@ gulp.task('build', function() {
   gulp.src('index.js')
   	.pipe(iife({global: 'MyModule', dependencies: [
     	{name: 'lodash', as: '_'}
-    ], global: 'MyModule'}))
+    ]}))
 
 // The result will look like:
 (function(root, factory) {
