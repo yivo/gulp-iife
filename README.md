@@ -11,7 +11,7 @@ npm install yivo/gulp-iife
 var iife = require('gulp-iife');
 gulp.task('build', function() {
   gulp.src('index.js')
-  	.pipe(iife({global: 'StrictParameters', dependencies: [
+  	.pipe(iife({global: 'MyModule', dependencies: [
     	{name: 'lodash', as: '_'}
     ], global: 'MyModule'}))
 
