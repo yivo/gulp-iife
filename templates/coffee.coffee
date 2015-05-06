@@ -47,8 +47,8 @@ module.exports = (options) ->
     __module__ = if options.global
       "root.#{options.global}"
     else "__module__"
-    s "      #{__module__} = factory(root)"
-    s "      define -> #{__module__}"
+    s "   #{__module__} = factory(root)"
+    s "   define -> #{__module__}"
 
   s "  else if typeof module is 'object' && typeof module.exports is 'object'"
 
@@ -60,7 +60,8 @@ module.exports = (options) ->
   s (if options.global
     "    root.#{options.global} = "
   else "    ") + "factory(#{['root'].concat(args.map(browserRequire)).join(', ')})"
-
+  
+  s "  return"
   s ")(this, (#{['root'].concat(args).join(', ')}) ->"
 
   s options.indent + options.contents
