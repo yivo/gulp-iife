@@ -65,7 +65,8 @@ module.exports = (options) ->
   s ")(this, (#{['root'].concat(args).join(', ')}) ->"
 
   s options.indent + options.contents
-
+  unless options.global
+    s options.indent + 'return'
   s ")"
 
   buff.join('\n')
