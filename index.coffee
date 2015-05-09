@@ -6,21 +6,24 @@ through = require 'through2'
 
 typeToTemplate =
   coffee: require('./templates/coffee.coffee')
+  js: require('./templates/js.coffee')
 
 typeToIndent =
   coffee: '  '
   js: '    '
 
-module.exports = (options = {}) ->
+module.exports = (config = {}) ->
   through.obj (file, enc, next) ->
     if file.isNull()
       @push(file)
 
     else if file.isBuffer()
 
-      filePath = if _.isFunction(options.pathModifier)
-        options.pathModifier(file.path)
+      filePath = if _.isFunction(config.pathModifier)
+        config.pathModifier(file.path)
       else file.path
+
+      options = _.extend({}, config)
 
       options.type ||= filePath.match(/\.([^\.]+)$/)?[1]
       options.indent ||= typeToIndent[options.type]
