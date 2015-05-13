@@ -18,7 +18,7 @@ reorderDependencies = (options) ->
     atEnd = []
 
     for dependency in options.dependencies
-      if dependency.as
+      if dependency.global
         atBeginning.push(dependency)
       else
         atEnd.push(dependency)
@@ -27,12 +27,19 @@ reorderDependencies = (options) ->
 
 module.exports = (options) ->
   buff = []
-  s = (str) -> buff.push str
+  s    = (str) -> buff.push(str)
+
+  options.dependencies =
+    for dep in options.dependencies
+      if dep.global
+        dep.argument ||= dep.global
+      dep
 
   reorderDependencies(options)
 
-  deps = _.filter(_.pluck(options.dependencies, 'name'))
-  args = _.filter(_.pluck(options.dependencies, 'as'))
+  deps    = _.filter(_.pluck(options.dependencies, 'require'))
+  args    = _.filter(_.pluck(options.dependencies, 'argument'))
+  globals = _.filter(_.pluck(options.dependencies, 'global'))
 
   s "((root, factory) ->"
   s "  if typeof define is 'function' and define.amd"
@@ -59,7 +66,7 @@ module.exports = (options) ->
 
   s (if options.global
     "    root.#{options.global} = "
-  else "    ") + "factory(#{['root'].concat(args.map(browserRequire)).join(', ')})"
+  else "    ") + "factory(#{['root'].concat(globals.map(browserRequire)).join(', ')})"
   
   s "  return"
   s ")(this, (#{['root'].concat(args).join(', ')}) ->"
