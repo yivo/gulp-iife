@@ -29,6 +29,7 @@ module.exports = (options) ->
   buff = []
   s    = (str) -> buff.push(str)
 
+  options.dependencies ||= []
   options.dependencies =
     for dep in options.dependencies
       if dep.global
@@ -54,8 +55,8 @@ module.exports = (options) ->
     __module__ = if options.global
       "root.#{options.global}"
     else "__module__"
-    s "   #{__module__} = factory(root)"
-    s "   define -> #{__module__}"
+    s "    #{__module__} = factory(root)"
+    s "    define -> #{__module__}"
 
   s "  else if typeof module is 'object' && typeof module.exports is 'object'"
 
