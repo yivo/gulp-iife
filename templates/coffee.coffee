@@ -70,7 +70,7 @@ module.exports = (options) ->
   else "    ") + "factory(#{['root'].concat(globals.map(browserRequire)).join(', ')})"
   
   s "  return"
-  s ")(this, (#{['root'].concat(args).join(', ')}) ->"
+  s ")(this, (#{['__root__'].concat(args).join(', ')}) ->"
 
   s options.indent + options.contents
   unless options.global
