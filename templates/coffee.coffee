@@ -3,7 +3,7 @@ _ = require 'lodash'
 singleQuote = (str) ->
   "'" + str.replace("'", "\\'") + "'"
 
-commonJsRequire = (dep) ->
+commonJSRequire = (dep) ->
   "require(" + singleQuote(dep) + ")"
 
 browserRequire = (dep) ->
@@ -43,6 +43,8 @@ module.exports = (options) ->
   globals = _.filter(_.pluck(options.dependencies, 'global'))
 
   s "((root, factory) ->"
+  s ""
+  s "  # AMD"
   s "  if typeof define is 'function' and define.amd"
 
   if deps.length
@@ -58,11 +60,16 @@ module.exports = (options) ->
     s "    #{__module__} = factory(root)"
     s "    define -> #{__module__}"
 
+  s ""
+  s "  # CommonJS"
   s "  else if typeof module is 'object' && typeof module.exports is 'object'"
 
   s (if options.global
     "    module.exports = "
-  else "    ") + "factory(#{['root'].concat(deps.map(commonJsRequire)).join(', ')})"
+  else "    ") + "factory(#{['root'].concat(deps.map(commonJSRequire)).join(', ')})"
+
+  s ""
+  s "  # Browser and the rest"
   s "  else"
 
   s (if options.global
