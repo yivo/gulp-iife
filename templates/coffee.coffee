@@ -75,7 +75,9 @@ module.exports = (options) ->
   s (if options.global
     "    root.#{options.global} = "
   else "    ") + "factory(#{['root'].concat(globals.map(browserRequire)).join(', ')})"
-  
+
+  s ""
+  s "  # No return value"
   s "  return"
   s ""
   s ")(this, (#{['__root__'].concat(args).join(', ')}) ->"
