@@ -84,7 +84,9 @@ module.exports = (options) ->
 
   s options.indent + options.contents
   unless options.global
-    s options.indent + 'return'
+    s options.indent + ""
+    s options.indent + "# No global variable export"
+    s options.indent + "return"
   s ")"
 
   buff.join('\n')
