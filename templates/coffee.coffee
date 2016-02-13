@@ -42,13 +42,23 @@ module.exports = (options) ->
   args    = _.filter(_.pluck(options.dependencies, 'argument'))
   globals = _.filter(_.pluck(options.dependencies, 'global'))
 
-  s "((root, factory) ->"
+  s "((factory) ->"
+  s ""
+  s "  # Browser and WebWorker"
+  s "  root = if typeof self is 'object' and self?.self is self"
+  s "    self"
+  s ""
+  s "  # Server"
+  s "  else if typeof global is 'object' and global?.global is global"
+  s "    global"
   s ""
   s "  # AMD"
   s "  if typeof define is 'function' and define.amd"
 
+  # https://github.com/jashkenas/backbone/blob/master/backbone.js
+
   if deps.length
-    s "    define [#{deps.map(amdRequire).join(', ')}], (#{args.join(', ')}) ->"
+    s "    define [#{deps.concat('exports').map(amdRequire).join(', ')}], (#{args.join(', ')}) ->"
     s (if options.global
       "      root.#{options.global} = "
     else "      ") + "factory(#{['root'].concat(args).join(', ')})"
@@ -62,7 +72,8 @@ module.exports = (options) ->
 
   s ""
   s "  # CommonJS"
-  s "  else if typeof module is 'object' && typeof module.exports is 'object'"
+  s "  else if typeof module is 'object' and module isnt null and"
+  s "          module.exports? and typeof module.exports is 'object'"
 
   s (if options.global
     "    module.exports = "
@@ -80,7 +91,7 @@ module.exports = (options) ->
   s "  # No return value"
   s "  return"
   s ""
-  s ")(this, (#{['__root__'].concat(args).join(', ')}) ->"
+  s ")((#{['__root__'].concat(args).join(', ')}) ->"
 
   s options.indent + options.contents
   unless options.global
