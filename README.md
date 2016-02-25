@@ -3,7 +3,7 @@ This small gulp plugin wraps your code in [IIFE](http://en.wikipedia.org/wiki/Im
 
 ## Installation
 ```
-npm i gulp-iife
+npm i gulp-iife-wrap
 ```
 
 ## Status
@@ -21,7 +21,7 @@ You would like to distribute this module on browser, AMD, and CommonJS environme
 
 ```coffee
 gulp = require('gulp')
-iife = require('gulp-iife')
+iife = require('gulp-iife-wrap')
 
 # Define dependencies for your module. Here we will define two dependencies: lodash and jquery.
 dependencies = [

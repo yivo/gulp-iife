@@ -1,5 +1,5 @@
 {
-  "name": "gulp-iife",
+  "name": "gulp-iife-wrap",
   "version": "1.0.1",
   "description": "IIFE wrapper for gulp",
   "main": "index.coffee",
