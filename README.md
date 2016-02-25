@@ -23,7 +23,7 @@ You would like to distribute this module on browser, AMD, and CommonJS environme
 gulp = require('gulp')
 iife = require('gulp-iife')
 
-# Define dependencies for your module. Here we will define you dependencies: lodash and jquery.
+# Define dependencies for your module. Here we will define two dependencies: lodash and jquery.
 dependencies = [
     // in AMD/CommonJS:          require('lodash')
     // in browser:               window._
