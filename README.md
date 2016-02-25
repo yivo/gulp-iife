@@ -8,28 +8,29 @@ npm install yivo/gulp-iife
 
 ## Usage
 ```js
+var gulp = require('gulp');
 var iife = require('gulp-iife');
+
+// This makes your module accessible in browsers: window.MyModule
+var global = 'MyModule';
+
+var dependencies = [
+    // in AMD/CommonJS: require('lodash')
+    // in browser: window._
+    // argument name in factory: _
+    { require: 'lodash',  global: '_' },
+
+    // in AMD/CommonJS: require('XRegExp')
+    // in browser: window.XRegExp
+    // argument name in factory: XRegExpExports
+    { require: 'XRegExp', global: 'XRegExp', argument: 'XRegExpExports'}
+];
+
 gulp.task('build', function() {
-  gulp.src('index.js')
-  	.pipe(iife({global: 'MyModule', dependencies: [
-    	{name: 'lodash', as: '_'}
-    ]}))
-
-// The result will look like:
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    return define(['lodash'], function(_) {
-      return root.MyModule = factory(root, _);
-    });
-  } else if (typeof module === 'object' && typeof module.exports === 'object') {
-    return module.exports = factory(root, require('lodash'));
-  } else {
-    return root.MyModule = factory(root, root._);
-  }
-})(this, function(root, _) {
-  var MyModule = {};
-  // ....
-  return MyModule;
+    gulp.src('index.js')
+        .pipe(iife({
+            global: global, dependencies: dependencies
+        }))
+        .pipe(gulp.dest('build'));
 });
-
 ```

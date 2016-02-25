@@ -4,13 +4,13 @@ fs      = require 'fs'
 _       = require 'lodash'
 through = require 'through2'
 
-typeToTemplate =
+TYPE_TO_TEMPLATE =
   coffee: require('./templates/coffee.coffee')
-  js: require('./templates/js.coffee')
+  js:     require('./templates/js.coffee')
 
-typeToIndent =
+TYPE_TO_INDENT =
   coffee: '  '
-  js: '    '
+  js:     '    '
 
 module.exports = (config = {}) ->
   through.obj (file, enc, next) ->
@@ -25,11 +25,11 @@ module.exports = (config = {}) ->
 
       options = _.extend({}, config)
 
-      options.type ||= filePath.match(/\.([^\.]+)$/)?[1]
-      options.indent ||= typeToIndent[options.type]
+      options.type   ||= filePath.match(/\.([^\.]+)$/)?[1]
+      options.indent ||= TYPE_TO_INDENT[options.type]
       options.contents = file.contents.toString('utf8').replace(/\r?\n/g, "\n#{options.indent}")
 
-      file.contents = new Buffer typeToTemplate[options.type](options)
+      file.contents = new Buffer(TYPE_TO_TEMPLATE[options.type](options))
 
       @push(file)
 

@@ -1,16 +1,9 @@
 _ = require 'lodash'
 
-singleQuote = (str) ->
-  "'" + str.replace("'", "\\'") + "'"
-
-commonJSRequire = (dep) ->
-  "require(" + singleQuote(dep) + ")"
-
-browserRequire = (dep) ->
-  "root.#{dep}"
-
-amdRequire = (dep) ->
-  singleQuote(dep)
+singleQuote     = (str) -> "'" + str.replace("'", "\\'") + "'"
+requireCommonJS = (dep) -> "require(" + singleQuote(dep) + ")"
+requireBrowser  = (dep) -> "root.#{dep}"
+requireAMD      = (dep) -> singleQuote(dep)
 
 reorderDependencies = (options) ->
   if options.dependencies
@@ -55,10 +48,8 @@ module.exports = (options) ->
   s "  # AMD"
   s "  if typeof define is 'function' and define.amd"
 
-  # https://github.com/jashkenas/backbone/blob/master/backbone.js
-
   if deps.length
-    s "    define [#{deps.concat('exports').map(amdRequire).join(', ')}], (#{args.join(', ')}) ->"
+    s "    define [#{deps.concat('exports').map(requireAMD).join(', ')}], (#{args.join(', ')}) ->"
     s (if options.global
       "      root.#{options.global} = "
     else "      ") + "factory(#{['root'].concat(args).join(', ')})"
@@ -77,7 +68,7 @@ module.exports = (options) ->
 
   s (if options.global
     "    module.exports = "
-  else "    ") + "factory(#{['root'].concat(deps.map(commonJSRequire)).join(', ')})"
+  else "    ") + "factory(#{['root'].concat(deps.map(requireCommonJS)).join(', ')})"
 
   s ""
   s "  # Browser and the rest"
@@ -85,7 +76,7 @@ module.exports = (options) ->
 
   s (if options.global
     "    root.#{options.global} = "
-  else "    ") + "factory(#{['root'].concat(globals.map(browserRequire)).join(', ')})"
+  else "    ") + "factory(#{['root'].concat(globals.map(requireBrowser)).join(', ')})"
 
   s ""
   s "  # No return value"
