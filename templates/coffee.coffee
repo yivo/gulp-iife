@@ -30,7 +30,7 @@ module.exports = (options) ->
 
   reorderDependencies(options)
 
-  depsRequire = _.filter(_.pluck(options.dependencies, 'require'))
+  depsRequire = _.filter(_.map(options.dependencies, 'require'))
 
   argsRequire =
     for dep in options.dependencies when dep.argument? and not dep.native
@@ -44,7 +44,7 @@ module.exports = (options) ->
     for dep in options.dependencies when dep.argument? and dep.native
       dep.argument
 
-  depsBrowser = _.filter(_.pluck(options.dependencies, 'global'))
+  depsBrowser = _.filter(_.map(options.dependencies, 'global'))
 
   a =
     for dep in options.dependencies when dep.global? and not dep.native
