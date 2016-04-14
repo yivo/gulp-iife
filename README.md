@@ -51,21 +51,21 @@ After running gulp we will have this code:
 ((factory) ->
 
   # Browser and WebWorker
-  root = if typeof self is 'object' and self?.self is self
+  root = if typeof self is 'object' and self isnt null and self.self is self
     self
 
   # Server
-  else if typeof global is 'object' and global?.global is global
+  else if typeof global is 'object' and global isnt null and global.global is global
     global
 
   # AMD
-  if typeof define is 'function' and define.amd
+  if typeof define is 'function' and typeof define.amd is 'object' and define.amd isnt null
     define ['lodash', 'jquery', 'exports'], (_, $) ->
       root.Module = factory(root, _, $)
 
   # CommonJS
   else if typeof module is 'object' and module isnt null and
-          module.exports? and typeof module.exports is 'object'
+          typeof module.exports is 'object' and module.exports isnt null
     module.exports = factory(root, require('lodash'), require('jquery'))
 
   # Browser and the rest
