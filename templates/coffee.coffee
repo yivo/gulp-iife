@@ -53,15 +53,15 @@ module.exports = (options) ->
   s "((factory) ->"
   s ""
   s "  # Browser and WebWorker"
-  s "  root = if typeof self is 'object' and self?.self is self"
+  s "  root = if typeof self is 'object' and self isnt null and self.self is self"
   s "    self"
   s ""
   s "  # Server"
-  s "  else if typeof global is 'object' and global?.global is global"
+  s "  else if typeof global is 'object' and global isnt null and global.global is global"
   s "    global"
   s ""
   s "  # AMD"
-  s "  if typeof define is 'function' and define.amd"
+  s "  if typeof define is 'function' and typeof define.amd is 'object' and define.amd isnt null"
 
   if depsRequire.length > 0
     s "    define [#{depsRequire.concat('exports').map(requireAMD).join(', ')}], (#{argsRequire.join(', ')}) ->"
@@ -79,7 +79,7 @@ module.exports = (options) ->
   s ""
   s "  # CommonJS"
   s "  else if typeof module is 'object' and module isnt null and"
-  s "          module.exports? and typeof module.exports is 'object'"
+  s "          typeof module.exports is 'object' and module.exports isnt null"
 
   s (if options.global?
     "    module.exports = "
