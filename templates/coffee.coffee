@@ -2,96 +2,79 @@ _ = require 'lodash'
 
 singleQuote     = (str) -> "'" + str.replace("'", "\\'") + "'"
 requireCommonJS = (dep) -> "require(" + singleQuote(dep) + ")"
-requireBrowser  = (dep) -> "root.#{dep}"
+requireBrowser  = (dep) -> "__root__.#{dep}"
 requireAMD      = (dep) -> singleQuote(dep)
 
 reorderDependencies = (options) ->
-  if options.dependencies?
+  options.dependencies = do ->
     atBeginning = []
     atEnd       = []
-
     for dependency in options.dependencies
       if dependency.global?
         atBeginning.push(dependency)
       else
         atEnd.push(dependency)
+    atBeginning.concat(atEnd)
 
-    options.dependencies = atBeginning.concat(atEnd)
-
-module.exports = (options) ->
+module.exports = (options = {}) ->
   buff = []
   s    = (str) -> buff.push(str)
-
-  options.dependencies ||= []
-  options.dependencies =
-    for dep in options.dependencies
-      dep.argument ?= dep.global if dep.global?
-      dep
+  
+  for dep in (options.dependencies ?= []) when dep.global?
+    dep.argument ?= dep.global
 
   reorderDependencies(options)
 
   depsRequire = _.filter(_.map(options.dependencies, 'require'))
+  argsRequire = (dep.argument for dep in options.dependencies when dep.argument? and not dep.native)
+  depsNative  = (dep.global   for dep in options.dependencies when dep.native)
+  argsNative  = (dep.argument for dep in options.dependencies when dep.argument? and dep.native)
+  depsBrowser = (dep.global   for dep in options.dependencies when dep.global? and not dep.native)
 
-  argsRequire =
-    for dep in options.dependencies when dep.argument? and not dep.native
-      dep.argument
-
-  depsNative =
-    for dep in options.dependencies when dep.native
-      dep.global
-
-  argsNative =
-    for dep in options.dependencies when dep.argument? and dep.native
-      dep.argument
-
-  depsBrowser = _.filter(_.map(options.dependencies, 'global'))
-
-  a =
-    for dep in options.dependencies when dep.global? and not dep.native
-      dep.global
-
+  s options.license if options.license
   s "((factory) ->"
   s ""
-  s "  # Browser and WebWorker"
-  s "  root = if typeof self is 'object' and self isnt null and self.self is self"
-  s "    self"
+  s "  __root__ = "
+  s "    # The root object for Browser or Web Worker"
+  s "    if typeof self is 'object' and self isnt null and self.self is self"
+  s "      self"
   s ""
-  s "  # Server"
-  s "  else if typeof global is 'object' and global isnt null and global.global is global"
-  s "    global"
+  s "    # The root object for server-side JavaScript runtime"
+  s "    else if typeof global is 'object' and global isnt null and global.global is global"
+  s "      global"
   s ""
-  s "  # AMD"
+  s "    else"
+  s "      this"
+  s ""
+  s "  # Asynchronous Module Definition (AMD)"
   s "  if typeof define is 'function' and typeof define.amd is 'object' and define.amd isnt null"
 
   if depsRequire.length > 0
-    s "    define [#{depsRequire.concat('exports').map(requireAMD).join(', ')}], (#{argsRequire.join(', ')}) ->"
+    s "    define [#{depsRequire.map(requireAMD).join(', ')}], (#{argsRequire.join(', ')}) ->"
     s (if options.global?
-      "      root.#{options.global} = "
-    else "      ") + "factory(#{['root'].concat(depsNative).concat(argsRequire).join(', ')})"
+      "      __root__.#{options.global} = "
+    else "      ") + "factory(#{['__root__'].concat(depsNative).concat(argsRequire).join(', ')})"
 
   else
-    __module__ = if options.global?
-      "root.#{options.global}"
-    else "__module__"
-    s "    #{__module__} = factory(#{['root'].concat(depsNative).join(', ')})"
+    __module__ = if options.global? then "__root__.#{options.global}" else "__module__"
+    s "    #{__module__} = factory(#{['__root__'].concat(depsNative).join(', ')})"
     s "    define -> #{__module__}"
 
   s ""
-  s "  # CommonJS"
-  s "  else if typeof module is 'object' and module isnt null and"
-  s "          typeof module.exports is 'object' and module.exports isnt null"
+  s "  # Server-side JavaScript runtime compatible with CommonJS Module Spec"
+  s "  else if typeof module is 'object' and module isnt null and typeof module.exports is 'object' and module.exports isnt null"
 
   s (if options.global?
     "    module.exports = "
-  else "    ") + "factory(#{['root'].concat(depsNative).concat(depsRequire.map(requireCommonJS)).join(', ')})"
+  else "    ") + "factory(#{['__root__'].concat(depsNative).concat(depsRequire.map(requireCommonJS)).join(', ')})"
 
   s ""
-  s "  # Browser and the rest"
+  s "  # Browser, Web Worker and the rest"
   s "  else"
 
   s (if options.global?
-    "    root.#{options.global} = "
-  else "    ") + "factory(#{['root'].concat(depsNative).concat(a.map(requireBrowser)).join(', ')})"
+    "    __root__.#{options.global} = "
+  else "    ") + "factory(#{['__root__'].concat(depsNative).concat(depsBrowser.map(requireBrowser)).join(', ')})"
 
   s ""
   s "  # No return value"
