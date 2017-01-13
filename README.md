@@ -1,6 +1,11 @@
 # gulp-umd-wrap
 Wraps JavaScript and CoffeeScript sources in UMD.
 
+[![npm](https://img.shields.io/npm/v/gulp-umd-wrap.svg)](https://www.npmjs.com/package/gulp-umd-wrap)
+[![License](https://img.shields.io/github/license/yivo/gulp-umd-wrap.svg)](https://github.com/yivo/gulp-umd-wrap)
+[![Dependency Status](https://img.shields.io/david/yivo/gulp-umd-wrap.svg)](https://david-dm.org/yivo/gulp-umd-wrap)
+[![devDependencies Status](https://img.shields.io/david/dev/yivo/gulp-umd-wrap.svg)](https://david-dm.org/yivo/gulp-umd-wrap?type=dev)
+
 ## Installation
 ```
 npm i gulp-umd-wrap
