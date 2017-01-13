@@ -85,7 +85,7 @@ module.exports = (options = {}) ->
   s options.indent + options.contents.trim()
   unless options.global?
     s options.indent + "" unless /\r?\n\s*$/.test(options.contents)
-    s options.indent + "# No global variable export"
+    s options.indent + "# Nothing exported"
     s options.indent + "return"
   s ")"
 
