@@ -2,7 +2,7 @@ _ = require 'lodash'
 
 singleQuote     = (str) -> "'" + str.replace("'", "\\'") + "'"
 requireCommonJS = (dep) -> "require(" + singleQuote(dep) + ")"
-requireBrowser  = (dep) -> "__root__.#{dep}"
+requireBrowser  = (dep) -> dep
 requireAMD      = (dep) -> singleQuote(dep)
 
 reorderDependencies = (options) ->
@@ -31,7 +31,7 @@ module.exports = (options = {}) ->
   argsNative  = (dep.argument for dep in options.dependencies when dep.argument? and dep.native)
   depsBrowser = (dep.global   for dep in options.dependencies when dep.global? and not dep.native)
 
-  s options.license if options.license
+  s options.header if options.header
   s "((factory) ->"
   s ""
   s "  __root__ = "
@@ -39,12 +39,12 @@ module.exports = (options = {}) ->
   s "    if typeof self is 'object' and self isnt null and self.self is self"
   s "      self"
   s ""
-  s "    # The root object for server-side JavaScript runtime"
+  s "    # The root object for Server-side JavaScript Runtime"
   s "    else if typeof global is 'object' and global isnt null and global.global is global"
   s "      global"
   s ""
   s "    else"
-  s "      this"
+  s "      Function('return this')()"
   s ""
   s "  # Asynchronous Module Definition (AMD)"
   s "  if typeof define is 'function' and typeof define.amd is 'object' and define.amd isnt null"
@@ -61,7 +61,7 @@ module.exports = (options = {}) ->
     s "    define -> #{__module__}"
 
   s ""
-  s "  # Server-side JavaScript runtime compatible with CommonJS Module Spec"
+  s "  # Server-side JavaScript Runtime compatible with CommonJS Module Spec"
   s "  else if typeof module is 'object' and module isnt null and typeof module.exports is 'object' and module.exports isnt null"
 
   s (if options.global?
